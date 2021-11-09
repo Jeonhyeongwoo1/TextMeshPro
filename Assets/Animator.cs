@@ -15,6 +15,8 @@ public class Animator : MonoBehaviour
     public float AngleMultiplier;
     public float colorSpeed = 0.01f;
     public float speed;
+    public float axisX;
+    public float movingMultiplier;
 
     void Start()
     {
@@ -40,101 +42,85 @@ public class Animator : MonoBehaviour
         Matrix4x4 matrix;
 
         TMP_TextInfo textInfo = mainTitle.GetTextInfo(mainTitle.text);
-        int count = textInfo.characterCount;
 
-        for (int i = 0; i < textInfo.characterCount; i++)
+
+        for(int i = 0; i < textInfo.characterCount; i++)
         {
-
-            int materialCount = textInfo.materialCount;
+            TMP_MeshInfo[] copyMeshInfo = textInfo.CopyMeshInfoVertexData();
             int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
             int vertexIndex = textInfo.characterInfo[i].vertexIndex;
-
-            TMP_MeshInfo[] meshInfo = textInfo.meshInfo;
-            Vector3[] sourceVertices = meshInfo[materialIndex].vertices;
+            Vector3[] sourceVertices = copyMeshInfo[materialIndex].vertices;
             Vector2 charMidBaseline = (sourceVertices[vertexIndex + 0] + sourceVertices[vertexIndex + 2]) / 2;
 
             Vector3 offset = charMidBaseline;
             Vector3[] destinationVertices = textInfo.meshInfo[materialIndex].vertices;
 
-            Vector3 middleV0 = (sourceVertices[vertexIndex + 1] + sourceVertices[vertexIndex + 0]) / 2;
-            Vector3 twoThirdV0 = (middleV0 + sourceVertices[vertexIndex + 1]) / 2;
-            Vector3 middleV1 = (sourceVertices[vertexIndex + 2] + sourceVertices[vertexIndex + 3]) / 2;
-            Vector3 twoThirdV1 = (middleV1 + sourceVertices[vertexIndex + 2]) / 2;
+            destinationVertices[vertexIndex + 0] = sourceVertices[vertexIndex + 0] - offset;
+            destinationVertices[vertexIndex + 1] = sourceVertices[vertexIndex + 1] - offset;
+            destinationVertices[vertexIndex + 2] = sourceVertices[vertexIndex + 2] - offset;
+            destinationVertices[vertexIndex + 3] = sourceVertices[vertexIndex + 3] - offset;
 
-            destinationVertices[vertexIndex + 0] = twoThirdV0 - offset;
-            destinationVertices[vertexIndex + 1] = sourceVertices[vertexIndex + 0] - offset;
-            destinationVertices[vertexIndex + 2] = sourceVertices[vertexIndex + 3] - offset;
-            destinationVertices[vertexIndex + 3] = twoThirdV1 - offset;
+            matrix = Matrix4x4.TRS(Vector3.left * movingMultiplier, Quaternion.identity, Vector3.one);
+
+            destinationVertices[vertexIndex + 0] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 0]);
+            destinationVertices[vertexIndex + 1] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 1]);
+            destinationVertices[vertexIndex + 2] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 2]);
+            destinationVertices[vertexIndex + 3] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 3]);
 
             destinationVertices[vertexIndex + 0] += offset;
             destinationVertices[vertexIndex + 1] += offset;
             destinationVertices[vertexIndex + 2] += offset;
             destinationVertices[vertexIndex + 3] += offset;
 
-            meshInfo[materialIndex].vertices = destinationVertices;
-
-            textInfo.textComponent.UpdateVertexData();        
-            yield return null;
         }
-    
-        for (int j = 0; j < textInfo.meshInfo.Length; j++)
+
+        while (true)
         {
-            textInfo.meshInfo[j].mesh.vertices = textInfo.meshInfo[j].vertices;
-            textInfo.textComponent.UpdateGeometry(textInfo.meshInfo[j].mesh, j);
-        }
+            for (int i = 0; i < textInfo.characterCount; i++)
+            {
+                if (textInfo.characterInfo[i].character == ' ') { continue; }
 
-        yield return null;
-        count--;
-        /*
-                for (int i = 0; i < textInfo.characterCount; i++)
+                TMP_MeshInfo[] originMeshInfo = textInfo.CopyMeshInfoVertexData();
+
+                int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
+                int vertexIndex = textInfo.characterInfo[i].vertexIndex;
+
+                TMP_MeshInfo[] copyMeshInfo = textInfo.CopyMeshInfoVertexData();
+                Vector3[] sourceVertices = copyMeshInfo[materialIndex].vertices;
+                Vector2 charMidBaseline = (sourceVertices[vertexIndex + 0] + sourceVertices[vertexIndex + 2]) / 2;
+
+                Vector3 offset = charMidBaseline;
+                Vector3[] destinationVertices = textInfo.meshInfo[materialIndex].vertices;
+
+                destinationVertices[vertexIndex + 0] = sourceVertices[vertexIndex + 0] - offset;
+                destinationVertices[vertexIndex + 1] = sourceVertices[vertexIndex + 1] - offset;
+                destinationVertices[vertexIndex + 2] = sourceVertices[vertexIndex + 2] - offset;
+                destinationVertices[vertexIndex + 3] = sourceVertices[vertexIndex + 3] - offset;
+
+                matrix = Matrix4x4.TRS(Vector3.left * movingMultiplier, Quaternion.identity, Vector3.one);
+
+                destinationVertices[vertexIndex + 0] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 0]);
+                destinationVertices[vertexIndex + 1] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 1]);
+                destinationVertices[vertexIndex + 2] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 2]);
+                destinationVertices[vertexIndex + 3] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 3]);
+
+                destinationVertices[vertexIndex + 0] += offset;
+                destinationVertices[vertexIndex + 1] += offset;
+                destinationVertices[vertexIndex + 2] += offset;
+                destinationVertices[vertexIndex + 3] += offset;
+
+                for (int j = 0; j < textInfo.meshInfo.Length; j++)
                 {
-                    if (textInfo.characterInfo[i].character == ' ') { continue; }
-
-                    int materialCount = textInfo.materialCount;
-                    int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
-                    int vertexIndex = textInfo.characterInfo[i].vertexIndex;
-
-                    TMP_MeshInfo[] meshInfo = textInfo.CopyMeshInfoVertexData();
-                    TMP_MeshInfo[] meshInfoss = textInfo.meshInfo;
-                    Vector3[] sourceVerticess = meshInfo[materialIndex].vertices;
-
-                    TMP_MeshInfo[] copyMeshInfo = textInfo.CopyMeshInfoVertexData();
-                    TMP_MeshInfo[] meshInfos = textInfo.meshInfo;
-                    Vector3[] sourceVertices = copyMeshInfo[materialIndex].vertices;
-                    Vector2 charMidBaseline = (sourceVertices[vertexIndex + 0] + sourceVertices[vertexIndex + 2]) / 2;
-
-                    Vector3 offset = charMidBaseline;
-                    Vector3[] destinationVertices = textInfo.meshInfo[materialIndex].vertices;
-
-                    destinationVertices[vertexIndex + 0] = sourceVertices[vertexIndex + 0] - offset;
-                    destinationVertices[vertexIndex + 1] = sourceVertices[vertexIndex + 1] - offset;
-                    destinationVertices[vertexIndex + 2] = sourceVertices[vertexIndex + 2] - offset;
-                    destinationVertices[vertexIndex + 3] = sourceVertices[vertexIndex + 3] - offset;
-
-                    matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(angleSpeed, 0, 0), Vector3.one);
-
-                    destinationVertices[vertexIndex + 0] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 0]);
-                    destinationVertices[vertexIndex + 1] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 1]);
-                    destinationVertices[vertexIndex + 2] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 2]);
-                    destinationVertices[vertexIndex + 3] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 3]);
-
-                    destinationVertices[vertexIndex + 0] += offset;
-                    destinationVertices[vertexIndex + 1] += offset;
-                    destinationVertices[vertexIndex + 2] += offset;
-                    destinationVertices[vertexIndex + 3] += offset;
-
-                    for (int j = 0; j < textInfo.meshInfo.Length; j++)
-                    {
-                        textInfo.meshInfo[j].mesh.vertices = textInfo.meshInfo[j].vertices;
-                        textInfo.textComponent.UpdateGeometry(textInfo.meshInfo[j].mesh, j);
-
-                    }
-
-                    yield return null;
-
+                    textInfo.meshInfo[j].mesh.vertices = textInfo.meshInfo[j].vertices;
+                    textInfo.textComponent.UpdateGeometry(textInfo.meshInfo[j].mesh, j);
                 }
-        */
 
+                yield return null;
+
+
+            }
+        }
+        
     }
 
     //두바퀴 턴
@@ -216,15 +202,6 @@ public class Animator : MonoBehaviour
 
         }
     }
-
-    IEnumerator CharRotation(Vector3[] destinationVertices, Vector3[] sourceVertices, Vector3 offset, TMP_TextInfo textInfo, int vertexIndex, Matrix4x4 matrix)
-    {
-
-
-        yield return null;
-
-    }
-
 
     IEnumerator RevealText()
     {
