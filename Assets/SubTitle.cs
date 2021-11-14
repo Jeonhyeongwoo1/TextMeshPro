@@ -7,7 +7,6 @@ using System;
 public class SubTitle : MonoBehaviour
 {
     public TextMeshProUGUI mainTitle;
-
     public AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     public TMP_TextInfo textInfo;
     public AnimationCurve scaleCurve;
@@ -29,8 +28,8 @@ public class SubTitle : MonoBehaviour
     void Start()
     {
         textInfo = mainTitle.GetTextInfo(mainTitle.text);
-        StartCoroutine(RadomScale());
-       // OpeningAnimation();
+       // StartCoroutine(RadomScale());
+        OpeningAnimation();
     }
 
     public void OpeningAnimation()
