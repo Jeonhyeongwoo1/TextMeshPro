@@ -136,7 +136,9 @@ public class TextAnimator : MonoBehaviour
 
     IEnumerator ElapsedProgress()
     {
-        float elapsed = 0, duration = GetDuration(animatorData);
+        float elapsed = 0;
+        float duration = animatorData.sequence ? GetDuration(animatorData) * animatorData.textmesh.textInfo.characterCount
+                                                : GetDuration(animatorData);
         bool direction = animatorData.progress < 1 ? true : false;
         while (elapsed < duration)
         {
@@ -145,15 +147,6 @@ public class TextAnimator : MonoBehaviour
             animatorData.progress = value;
             yield return null;
         }
-    }
-
-    IEnumerator RandomProceeding()
-    {
-        yield return new WaitForSeconds(2f);
-
-
-
-        yield return null;
     }
 
     public List<int> Shuffle(int count)
@@ -224,10 +217,10 @@ public class TextAnimator : MonoBehaviour
                 else
                 {
                     StartCoroutine(CharacterProceeding(textInfo, vertextMeshInfoData, index, () =>
-                     {
-                         count++;
-                         ratio = Mathf.Clamp01((float)count / (float)textInfo.characterCount);
-                     }));
+                    {
+                        count++;
+                        ratio = Mathf.Clamp01((float)count / (float)textInfo.characterCount);
+                    }));
                 }
 
                 yield return new WaitForSeconds(delay);
@@ -257,7 +250,6 @@ public class TextAnimator : MonoBehaviour
         }
 
         StartAnimation();
-
 
     }
 
