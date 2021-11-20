@@ -50,7 +50,9 @@
  
  ![image](https://user-images.githubusercontent.com/50667930/142714814-0d44cde3-d472-48d0-a73e-caf1d9a83904.png)
 
+ ## Game View
  
- 
+ ![ezgif com-gif-maker](https://user-images.githubusercontent.com/50667930/142715129-1a6d2f76-0ba3-4426-a833-32a6214387cb.gif)
+
  ## 참고 자료
  https://github.com/coposuke/TextMeshProAnimator
