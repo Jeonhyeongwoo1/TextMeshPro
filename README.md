@@ -28,7 +28,7 @@
  characterDelay | character Animation Delay
  
 ## Code
-public Method
+ * Public Method
 
 <pre>
 <code>
