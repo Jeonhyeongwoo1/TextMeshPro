@@ -11,7 +11,7 @@
 ## Component
 
  * 코루틴을 사용하여 애니메이션 효과 구현
- * 텍스트 캐릭터를 이용하여 애니메이션 효과 구현
+ * Text Character를 이용하여 애니메이션 효과 구현
  
  Variable | Description
  ---|---|
@@ -27,4 +27,24 @@
  waitingTimeAfterLooping | next Animation WaitTime
  characterDelay | character Animation Delay
  
+## Code
+
+<pre>
+<code>
+    public void StartAnimation()
+    {
+        if (animatorData.colorInfo.use)
+        {
+            StartCoroutine(ChangingColor());
+        }
+        else
+        {
+            StartCoroutine(Proceeding());
+        }
+    }
+</code>
+</pre>
  
+ 
+ ## 참고 자료
+ https://github.com/coposuke/TextMeshProAnimator
