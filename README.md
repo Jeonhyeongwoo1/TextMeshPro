@@ -11,7 +11,20 @@
 ## Component
 
  * 코루틴을 사용하여 애니메이션 효과 구현
+ * 텍스트 캐릭터를 이용하여 애니메이션 효과 구현
  
  Variable | Description
+ ---|---|
+ colorInfo | TextMeshPro Vertex Color
+ charColorInfo | TextMeshPro Vertex Character Color
+ scaleInfo | TextMeshPro Vertex Character Scale 
+ positionInfo | TextMeshPro Vertex Character Position
+ rotationInfo | TextMeshPro Vertex Character Rotation
+ isLooping | Whether to play repeatedly
+ sequence | Whether to play sequence
+ useMaxVisibleCharacter | Whether to play visible Character
+ shuffle | Whether to play random
+ waitingTimeAfterLooping | next Animation WaitTime
+ characterDelay | character Animation Delay
  
-
+ 
